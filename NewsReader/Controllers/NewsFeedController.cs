@@ -19,12 +19,29 @@ namespace NewsReader.Controllers
         {
             _newsProcessor = newsProcessor;
         }
-
-
-        [HttpGet]
-        public IEnumerable<IStory> Get()
+        
+        [HttpGet("stories/{pageNumber}")]
+        public IEnumerable<Story> Get(int pageNumber)
         {
-            return _newsProcessor.GetStoryListPage(1);
+            return _newsProcessor.GetPageOfStories(pageNumber);
+        }
+
+        [HttpGet("pages")]
+        public int Get()
+        {
+            return _newsProcessor.GetNumberOfPages();
+        }
+
+        [HttpGet("stories/search/{pageNumber}/{searchTerm}")]
+        public IEnumerable<Story> Get(int pageNumber, string searchTerm)
+        {
+            return _newsProcessor.GetPageOfStories(pageNumber, searchTerm);
+        }
+
+        [HttpGet("pages/search/{searchTerm}")]
+        public int Get(string searchTerm)
+        {
+            return _newsProcessor.GetNumberOfPages(searchTerm);
         }
     }
 }

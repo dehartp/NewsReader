@@ -8,8 +8,8 @@ namespace NewsReader.Processor
 {
     public interface INewsProcessor
     {
-        IEnumerable<IStory> GetStoryListPage(int pageNumber);
+        IEnumerable<Story> GetPageOfStories(int pageNumber, string searchTerm = null);
 
-        int NumberOfPages { get; }
+        int GetNumberOfPages(string searchTerm = null);
     }
 }

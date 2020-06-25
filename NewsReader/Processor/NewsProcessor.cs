@@ -11,49 +11,67 @@ namespace NewsReader.Processor
         private const string FireBaseUri = "https://hacker-news.firebaseio.com/v0/";
         private const int PageSize = 10;
         private readonly IDataRetrieval _dataRetrieval;
-        private readonly Dictionary<string, IStory> _stories;
-        private List<string> _storyIds;
+        private List<Story> _stories;
 
         public NewsProcessor(IDataRetrieval dataRetrieval)
         {
             _dataRetrieval = dataRetrieval;
-            _stories = new Dictionary<string, IStory>();
+            _stories = new List<Story>();
             LoadNewestStories();
         }
 
-        public int NumberOfPages =>
-            _storyIds.Count % PageSize == 0 ? _storyIds.Count / PageSize : _storyIds.Count / PageSize + 1;
-
-        public IEnumerable<IStory> GetStoryListPage(int pageNumber)
+        public IEnumerable<Story> GetPageOfStories(int pageNumber, string searchTerm = null)
         {
-            if (pageNumber < 1 || pageNumber > NumberOfPages)
+            var numberOfPages = GetNumberOfPages(searchTerm);
+
+            if (numberOfPages == 0)
             {
-                throw new InvalidOperationException($"Invalid page number: {pageNumber}");
+                return new List<Story>();
             }
 
-            var results = new List<IStory>();
-            var storiesToReturn = _storyIds.GetRange(GetPageStartIndex(pageNumber), GetRangeCount(pageNumber));
+            if (pageNumber < 1 || pageNumber > numberOfPages)
+            {
+                throw new InvalidOperationException($"Invalid page number: {pageNumber} for search term {searchTerm}");
+            }
 
-            foreach (var storyId in storiesToReturn) results.Add(GetStory(storyId));
+            var searchedList = GetSearchedListOfStories(searchTerm);
 
-            return results;
+            return searchedList.GetRange(GetPageStartIndex(pageNumber), GetRangeCount(pageNumber, numberOfPages, searchedList.Count));
         }
 
-        private IStory GetStory(string storyId)
+        public int GetNumberOfPages(string searchTerm = null)
         {
-            if (!_stories.ContainsKey(storyId)) _stories.Add(storyId, LoadStory(storyId));
+            var searchedList = GetSearchedListOfStories(searchTerm);
 
-            return _stories[storyId];
+            return searchedList.Count() % PageSize == 0 ? (searchedList.Count() / PageSize) : (searchedList.Count() / PageSize) + 1;
         }
 
-        private IStory LoadStory(string storyId)
+        private List<Story> GetSearchedListOfStories(string searchTerm)
+        {
+            return string.IsNullOrEmpty(searchTerm) ? _stories : _stories.Where(s => s.Title.Contains(searchTerm)).ToList();
+        }
+
+        private Story LoadStory(string storyId)
         {
             return _dataRetrieval.GetStory(storyId);
         }
 
         private void LoadNewestStories()
         {
-            _storyIds = _dataRetrieval.GetListOfStories().ToList();
+            var stories = new List<Story>();
+            var storyIds = _dataRetrieval.GetListOfStories();
+            foreach (var storyId in storyIds)
+            {
+                var story = LoadStory(storyId);
+
+                if (!string.IsNullOrEmpty(story.Url))
+                {
+                    stories.Add(story);
+                }
+            }
+
+            // Newest stories first; hacker news specification ids are integers
+            _stories = stories.OrderByDescending(s => int.Parse(s.Id)).ToList();
         }
 
         private int GetPageStartIndex(int pageNumber)
@@ -61,9 +79,9 @@ namespace NewsReader.Processor
             return (pageNumber - 1) * PageSize;
         }
 
-        private int GetRangeCount(int pageNumber)
+        private int GetRangeCount(int pageNumber, int numberOfPages, int listCount)
         {
-            return pageNumber < NumberOfPages ? PageSize : _storyIds.Count % PageSize;
+            return pageNumber < numberOfPages ? PageSize : listCount % PageSize;
         }
     }
 }

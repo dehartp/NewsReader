@@ -1,21 +1,23 @@
 <h1 id="tableLabel">Top Stories</h1>
 
-<p>Current top stories fromm hacker-news</p>
+<p>Current top stories from hacker-news</p>
 
 <p *ngIf="!newsStories"><em>Loading...</em></p>
 
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="newsStories">
   <thead>
-    <tr>
-      <th>Title</th>
-      <th>Link</th>
-    </tr>
+  <tr>
+    <th>Title</th>
+    <th>Link</th>
+  </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let newsStory of newsStories">
-      <td>{{ newsStory.title }}</td>
-      <td>{{ newsStory.url }}</td>
+  <tr *ngFor="let newsStory of newsStories">
+    <td>{{ newsStory.title }}</td>
+    <td>{{ newsStory.url }}</td>
 
-    </tr>
+  </tr>
   </tbody>
 </table>
+<button *ngIf="showPreviousButton" (click)="previous()">Previous Page</button>
+<button *ngIf="showNextButton" (click)="next()">Next Page</button>

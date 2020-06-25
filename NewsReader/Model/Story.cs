@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace NewsReader.Model
 {
-    public class Story : IStory
+    public class Story
     {
+        public string Id { get; set; }
         public string Title { get; set; }
         public string Url { get; set; }
     }
