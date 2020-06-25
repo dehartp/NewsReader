@@ -50,6 +50,12 @@ export class NewsComponent {
     this.updateButtonVisibility();
   }
 
+  search() {
+    this.httpClient.get<Story[]>(this.url + 'newsfeed/stories/search/1/' + encodeURIComponent('minute')).subscribe(result => {
+      this.newsStories = result;
+    }, error => console.error(error));
+  }
+
   updateButtonVisibility() {
     this.showNextButton = (this.currentPage < this.pageCount);
     this.showPreviousButton = (this.currentPage > 1);

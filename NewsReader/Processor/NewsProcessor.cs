@@ -48,7 +48,7 @@ namespace NewsReader.Processor
 
         private List<Story> GetSearchedListOfStories(string searchTerm)
         {
-            return string.IsNullOrEmpty(searchTerm) ? _stories : _stories.Where(s => s.Title.Contains(searchTerm)).ToList();
+            return string.IsNullOrEmpty(searchTerm) ? _stories : _stories.Where(s => s.Title.ToLower().Contains(searchTerm.ToLower())).ToList();
         }
 
         private Story LoadStory(string storyId)

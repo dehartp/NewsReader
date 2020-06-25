@@ -3,7 +3,7 @@
 <p>Current top stories from hacker-news</p>
 
 <p *ngIf="!newsStories"><em>Loading...</em></p>
-
+<button (click)="search()">Search</button>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="newsStories">
   <thead>
   <tr>
