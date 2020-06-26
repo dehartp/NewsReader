@@ -1,14 +1,14 @@
-import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, Inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
-  selector: 'app-news',
-  templateUrl: './news.component.html'
+  selector: "app-news",
+  templateUrl: "./news.component.html"
 })
 export class NewsComponent {
-  public newsStories: Story[];
-  public showNextButton: boolean;
-  public showPreviousButton: boolean;
+  newsStories: IStory[];
+  showNextButton: boolean;
+  showPreviousButton: boolean;
   pageCount: number;
   currentPage: number;
   httpClient: HttpClient;
@@ -16,82 +16,76 @@ export class NewsComponent {
   searchString: string;
   pageString: string;
 
-  constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
+  constructor(http: HttpClient, @Inject("BASE_URL") baseUrl: string) {
     this.currentPage = 1;
     this.httpClient = http;
     this.baseUrl = baseUrl;
-
-    http.get<number>(baseUrl + 'newsfeed/pages').subscribe(result => {
-      this.pageCount = result;
-      this.updatePageButtons();
-    }, error => console.error(error));
-
-    http.get<Story[]>(baseUrl + 'newsfeed/stories/1').subscribe(result => {
-      this.newsStories = result;
-    }, error => console.error(error));
+    this.loadPage();
   }
 
   next() {
     this.currentPage++;
-
-    this.httpClient.get<Story[]>(this.baseUrl + 'newsfeed/stories/' + this.currentPage).subscribe(result => {
-      this.newsStories = result;
-    }, error => console.error(error));
-
-    this.updatePageButtons();
+    this.loadPage();
   }
 
   previous() {
     this.currentPage--;
-
-    this.httpClient.get<Story[]>(this.baseUrl + 'newsfeed/stories/' + this.currentPage).subscribe(result => {
-      this.newsStories = result;
-    }, error => console.error(error));
-
-    this.updatePageButtons();
+    this.loadPage();
   }
 
   search() {
     this.currentPage = 1;
-
-    this.httpClient.get<number>(this.baseUrl + 'newsfeed/pages/search/' + encodeURIComponent(this.searchString)).subscribe(result => {
-      this.pageCount = result;
-      this.updatePageButtons();
-    }, error => console.error(error));
-
-    this.httpClient.get<Story[]>(this.baseUrl + 'newsfeed/stories/search/1/' + encodeURIComponent(this.searchString)).subscribe(result => {
-      this.newsStories = result;
-    }, error => console.error(error));
+    this.loadPage();
   }
 
   clearSearch() {
-    this.searchString = '';
+    this.searchString = null;
     this.currentPage = 1;
-
-    this.httpClient.get<Story[]>(this.baseUrl + 'newsfeed/stories/1').subscribe(result => {
-      this.newsStories = result;
-    }, error => console.error(error));
-
-    this.updatePageButtons();
+    this.loadPage();
   }
 
-  setPageCount(searchString) {
+  loadPage() {
+    this.setPageCount();
+    this.loadStories();
+  }
 
-    if (searchString) {
-
+  loadStories() {
+    let url;
+    if (this.searchString) {
+      url = this.baseUrl + "newsfeed/stories/search/" + this.currentPage + "/" + encodeURIComponent(this.searchString);
     } else {
-
+      url = this.baseUrl + "newsfeed/stories/" + this.currentPage;
     }
+
+    this.httpClient.get<IStory[]>(url).subscribe(result => {
+        this.newsStories = result;
+      },
+      error => console.error(error));
+  }
+
+  setPageCount() {
+    let url;
+    if (this.searchString) {
+      url = this.baseUrl + "newsfeed/pages/search/" + encodeURIComponent(this.searchString);
+    } else {
+      url = this.baseUrl + "newsfeed/pages";
+    }
+
+    this.httpClient.get<number>(url).subscribe(result => {
+        this.pageCount = result;
+        this.updatePageButtons();
+      },
+      error => console.error(error));
   }
 
   updatePageButtons() {
     this.showNextButton = (this.currentPage < this.pageCount);
     this.showPreviousButton = (this.currentPage > 1);
-    this.pageString = 'Page ' + this.currentPage + ' of ' + this.pageCount;
+    this.pageString = `Page ${this.currentPage} of ${this.pageCount}`;
   }
 }
 
-interface Story {
+interface IStory {
   title: string;
   url: string;
 }
