@@ -2,8 +2,10 @@
 
 <p>Current top stories from hacker-news</p>
 
-<p *ngIf="!newsStories"><em>Loading...</em></p>
-<button (click)="search()">Search</button>
+<p *ngIf="!newsStories"><em>Loading news stories from hacker-news.  This can take several seconds....</em></p>
+
+<div *ngIf="newsStories">Search text: <input type="text" [(ngModel)]='searchString' /><button (click)="search()">Search</button><button (click)="clearSearch()">Clear Search</button></div>
+<div *ngIf="newsStories"><button *ngIf="showPreviousButton" (click)="previous()">Previous Page</button><button *ngIf="showNextButton" (click)="next()">Next Page</button> <strong>{{pageString}}</strong></div>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="newsStories">
   <thead>
   <tr>
@@ -13,11 +15,9 @@
   </thead>
   <tbody>
   <tr *ngFor="let newsStory of newsStories">
-    <td>{{ newsStory.title }}</td>
-    <td>{{ newsStory.url }}</td>
-
+    <td><a href="{{newsStory.url}}">{{ newsStory.title }}</a></td>
   </tr>
   </tbody>
 </table>
-<button *ngIf="showPreviousButton" (click)="previous()">Previous Page</button>
-<button *ngIf="showNextButton" (click)="next()">Next Page</button>
+
+

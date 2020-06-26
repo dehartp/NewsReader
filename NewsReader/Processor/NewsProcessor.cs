@@ -64,7 +64,7 @@ namespace NewsReader.Processor
             {
                 var story = LoadStory(storyId);
 
-                if (!string.IsNullOrEmpty(story.Url))
+                if (story != null && !string.IsNullOrEmpty(story.Url))
                 {
                     stories.Add(story);
                 }
