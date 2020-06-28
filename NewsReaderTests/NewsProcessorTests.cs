@@ -152,52 +152,6 @@ namespace NewsReaderTests
             _dataRetrievalMock.Verify(m => m.GetStory("25"), Times.Once);
         }
 
-        //[Test]
-        //public void NewsProcessor_GetStoryListPage_DoesNotRepeatCallForCachedStories()
-        //{
-        //    var pageNumber = 2;
-        //    SetupMockForPage(pageNumber);
-        //    var newsProcessor = new NewsProcessor(_dataRetrievalMock.Object);
-
-        //    newsProcessor.GetStoryListPage(pageNumber);
-        //    newsProcessor.GetStoryListPage(pageNumber);
-
-        //    _dataRetrievalMock.Verify(m => m.GetStory(It.IsAny<string>()), Times.Exactly(10));
-        //}
-
-        //[Test]
-        //public void NewsProcessor_GetStoryListPage_LastPage_CallsCorrectNumberOfTimes()
-        //{
-        //    var pageNumber = 3;
-        //    SetupMockForPage(pageNumber);
-        //    var newsProcessor = new NewsProcessor(_dataRetrievalMock.Object);
-
-        //    newsProcessor.GetStoryListPage(pageNumber);
-
-        //    _dataRetrievalMock.Verify(m => m.GetStory(It.IsAny<string>()), Times.Exactly(5));
-        //    for (var i = 21; i < 26; i++)
-        //    {
-        //        _dataRetrievalMock.Verify(m => m.GetStory(i.ToString()), Times.Once);
-        //    }
-        //}
-
-        //[Test]
-        //public void NewsProcessor_GetStoryListPage_CorrectResults()
-        //{
-        //    var pageNumber = 1;
-        //    SetupMockForPage(pageNumber);
-        //    var newsProcessor = new NewsProcessor(_dataRetrievalMock.Object);
-
-        //    var results = newsProcessor.GetStoryListPage(pageNumber).ToList();
-
-        //    Assert.AreEqual(10, results.Count());
-
-        //    for (var i = 1; i <= 10; i++)
-        //    {
-        //        Assert.AreEqual(1, results.Count(r => r.Title == "Title" + i && r.Url == "Url" + i));
-        //    }
-        //}
-
         private void SetupTestData(int numberOfTestStories)
         {
             var storyIdList = new List<string>();
@@ -211,27 +165,5 @@ namespace NewsReaderTests
 
             _dataRetrievalMock.Setup(m => m.GetListOfStories()).Returns(storyIdList);
         }
-
-        //private void SetupMockForPage(int pageNumber)
-        //{
-        //    var startIndex = ((pageNumber - 1) * PageSize) + 1;
-        //    for (var i = startIndex; i < startIndex + PageSize; i++)
-        //    {
-        //        var index = i; // avoid issues with capture
-        //        _dataRetrievalMock.Setup(m => m.GetStory(index.ToString()))
-        //            .Returns(new Story { Title = "Title" + index, Url = "Url" + index, Id = index.ToString() });
-        //    }
-        //}
-
-        //private List<string> GetTestStoryIds(int numberOfRecords)
-        //{
-        //    var results = new List<string>();
-        //    for (var i = 1; i <= numberOfRecords; i++)
-        //    {
-        //        results.Add(i.ToString());
-        //    }
-
-        //    return results;
-        //}
     }
 }
