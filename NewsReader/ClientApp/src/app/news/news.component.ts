@@ -12,14 +12,12 @@ export class NewsComponent {
   pageCount: number;
   currentPage: number;
   httpClient: HttpClient;
-  baseUrl: string;
   searchString: string;
   pageString: string;
 
-  constructor(http: HttpClient, @Inject("BASE_URL") baseUrl: string) {
+  constructor(http: HttpClient) {
     this.currentPage = 1;
     this.httpClient = http;
-    this.baseUrl = baseUrl;
     this.loadPage();
   }
 
@@ -52,9 +50,9 @@ export class NewsComponent {
   loadStories() {
     let url;
     if (this.searchString) {
-      url = this.baseUrl + "newsfeed/stories/search/" + this.currentPage + "/" + encodeURIComponent(this.searchString);
+      url = "/newsfeed/stories/search/" + this.currentPage + "/" + encodeURIComponent(this.searchString);
     } else {
-      url = this.baseUrl + "newsfeed/stories/" + this.currentPage;
+      url = "/newsfeed/stories/" + this.currentPage;
     }
 
     this.httpClient.get<IStory[]>(url).subscribe(result => {
@@ -66,9 +64,9 @@ export class NewsComponent {
   setPageCount() {
     let url;
     if (this.searchString) {
-      url = this.baseUrl + "newsfeed/pages/search/" + encodeURIComponent(this.searchString);
+      url = "/newsfeed/pages/search/" + encodeURIComponent(this.searchString);
     } else {
-      url = this.baseUrl + "newsfeed/pages";
+      url = "/newsfeed/pages";
     }
 
     this.httpClient.get<number>(url).subscribe(result => {
